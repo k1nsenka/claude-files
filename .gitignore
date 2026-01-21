@@ -1,0 +1,35 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# エディタ・IDE
+*.swp
+*.swo
+*.swn
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# バックアップファイル
+*.bak
+*.backup
+*.orig
+
+# ログファイル
+*.log
+
+# 一時ファイル
+*.tmp
+*.temp
+.cache/
