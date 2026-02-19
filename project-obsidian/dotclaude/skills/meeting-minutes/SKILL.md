@@ -1,3 +1,8 @@
+---
+name: meeting-minutes
+description: "Zoomトランスクリプト（.vtt）と会議資料を解析し、構造化された議事録とTODOリストを作成するスキル。「議事録を作成して」「vttから議事録」「会議のTODOを抽出」などのリクエストに対応。"
+---
+
 # 会議議事録作成スキル（Meeting Minutes Skill）
 
 ## 概要

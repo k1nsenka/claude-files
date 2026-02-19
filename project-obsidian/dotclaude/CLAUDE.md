@@ -33,6 +33,7 @@
 - **進捗報告作成スキル**: `skills/progress-report.md`
 - **テクニカルライティングスキル**: `skills/technical-writing.md`
 - **会議議事録作成スキル**: `skills/meeting-minutes.md`
+- **リサーチイントロ作成スキル**: `skills/research-intro.md`
 
 ## 基本動作原則
 
