@@ -1,160 +1,91 @@
-# Claude.md 分散構成ガイド（uv / gh 対応版）
+# claude-files — 統一 Claude Code 設定
 
-## 概要
+コーディング用と日々のメモ（Obsidian）用に分かれていた 2 つの `.claude` 構成を、
+**ユーザーレベル（`~/.claude`）の単一構成に完全統一**したリポジトリ。
+Obsidian vault 内で実装も行う運用のため、プロジェクト側に `.claude/` を置く必要はない。
 
-Claude公式ドキュメントのベストプラクティスに従い、CLAUDE.mdを分散構成しました。
-- Python環境管理: **uv**
-- GitHub操作: **gh (GitHub CLI)**
+- スキルは description に基づいて自動選択されるため、コーディング用と研究・メモ用が
+  同居しても干渉しない
+- ルールは `paths` フロントマターにより**対象ファイルの操作時のみ読み込まれる**
+  （Python ルールは `.py` 操作時、Obsidian 記法ルールは `.md` 操作時のみ。コンテキスト節約）
+- `install.sh` が `~/.claude` へ **symlink** を張るため、このリポジトリを編集すれば
+  即座に反映される（コピー運用によるドリフトが起きない）
 
 ## ディレクトリ構成
 
 ```
-~/.claude/                          # 個人用（全プロジェクト共通）
-└── CLAUDE.md                       # 個人設定
-
-your-project/                       # プロジェクト用
-└── .claude/
-    ├── CLAUDE.md                   # プロジェクト概要（300行以下推奨）
-    ├── rules/                      # 詳細ルール（動的読み込み）
-    │   ├── workflow.md             # 基本ワークフロー
-    │   ├── uv.md                   # uv専用ルール（*.py操作時）
-    │   ├── code-style.md           # コーディング規約（*.py操作時）
-    │   ├── testing.md              # テスト規約（tests/**操作時）
-    │   ├── security.md             # セキュリティ（機密ファイル操作時）
-    │   ├── documentation.md        # ドキュメント規約（*.md操作時）
-    │   └── git.md                  # Git/gh規約
-    └── skills/                     # ワークフロースキル
-        ├── design-workflow/
-        │   └── SKILL.md            # 「設計して」で発動
-        ├── implementation-workflow/
-        │   └── SKILL.md            # 「実装して」で発動
-        ├── refactoring/
-        │   └── SKILL.md            # 「リファクタリングして」で発動
-        └── create-pr/
-            └── SKILL.md            # 「PRを作成して」で発動
+claude-files/
+├── install.sh                 # ~/.claude へ展開（symlink + settings マージ）
+└── home/                      # → ~/.claude（全プロジェクト共通）
+    ├── CLAUDE.md              # 個人設定（言語・スタイル・作業の進め方）
+    ├── settings.json          # 共通 permissions / 通知 hooks（既存設定へ非破壊マージ）
+    ├── rules/                 # ルール（paths 指定は条件付き読み込み）
+    │   ├── git.md             # Git 規約（常時）
+    │   ├── python.md          # uv + コーディングスタイル（*.py 操作時）
+    │   ├── testing.md         # テスト規約（tests/** 操作時）
+    │   ├── security.md        # 機密ファイル（.env* 等の操作時）
+    │   ├── documentation.md   # 設計書規約（docs/** 操作時）
+    │   └── obsidian.md        # メモの記法・命名規則（*.md 操作時。コード付属文書は対象外）
+    ├── skills/
+    │   ├── dev-workflow/      # 設計→承認→実装→テスト（旧 design+implementation 統合）
+    │   ├── refactoring/       # リファクタリング
+    │   ├── create-pr/         # PR 作成（gh）
+    │   ├── paper-review/      # 論文査読（標準 / top-tier モード統合）
+    │   ├── paper-review-panel/# ★ 5査読者並列 + メタレビューのオーケストレータ
+    │   ├── meta-review/       # 査読統合プロトコル（meta-reviewer 用）
+    │   ├── japanese-academic-style-check/  # 日本語論文文体チェック
+    │   ├── technical-writing/ # 黄金フォーマット執筆
+    │   ├── research-intro/    # 論文イントロ作成
+    │   ├── meeting-minutes/   # vtt → 議事録
+    │   ├── progress-report/   # 進捗報告作成
+    │   └── task-summary/      # TODO 集約
+    └── agents/                # 査読者エージェント
+        ├── reviewer-a.md      # 方法論・妥当性・再現性
+        ├── reviewer-b.md      # 分析の深さ（Analysis Lover）
+        ├── reviewer-c.md      # 産業応用（Industry Pragmatist）
+        ├── reviewer-d.md      # 理論（Theoretical Stickler）
+        ├── reviewer-e.md      # 実験（Empirical Hardliner）
+        └── meta-reviewer.md   # メタレビュー統合
 ```
 
-## 各コンポーネントの役割
-
-### CLAUDE.md（プロジェクト）
-- **目的**: プロジェクトの全体像を示す「地図」
-- **推奨行数**: 300行以下
-- **内容**: 技術スタック、プロジェクト構成、ルール/スキルへの参照
-
-### Rules（.claude/rules/）
-- **目的**: ファイル種別ごとの詳細ルール
-- **特徴**: `paths`フロントマターで指定したファイル操作時のみ読み込み（コンテキスト節約）
-- **適用例**:
-  - `uv.md` / `code-style.md`: `**/*.py`操作時のみ
-  - `testing.md`: `tests/**/*.py`操作時のみ
-  - `documentation.md`: `**/*.md`操作時のみ
-
-### Skills（.claude/skills/）
-- **目的**: 繰り返し可能なワークフローの定義
-- **特徴**: Claudeが自動的に適切なスキルを選択
-- **トリガー例**:
-  - 「設計して」→ design-workflow
-  - 「実装して」→ implementation-workflow
-  - 「リファクタリングして」→ refactoring
-  - 「PRを作成して」→ create-pr
-
-## セットアップ方法
-
-### 1. 個人用CLAUDE.mdの配置
-```bash
-mkdir -p ~/.claude
-cp personal/CLAUDE.md ~/.claude/
-```
-
-### 2. プロジェクト用ファイルの配置
-```bash
-# プロジェクトルートで実行
-cp -r project/.claude ./
-```
-
-### 3. 必要なツールのインストール
-
-#### uv
-```bash
-# macOS/Linux
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Windows
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
-
-#### GitHub CLI
-```bash
-# macOS
-brew install gh
-
-# Ubuntu/Debian
-sudo apt install gh
-
-# Windows
-winget install GitHub.cli
-```
-
-#### 認証
-```bash
-gh auth login
-```
-
-### 4. 確認
-```bash
-# Claude Codeで確認
-claude
-# > What Skills are available?
-# > /memory
-```
-
-## uv クイックリファレンス
+## セットアップ
 
 ```bash
-# プロジェクト初期化
-uv init
-
-# 依存関係同期（仮想環境自動作成）
-uv sync
-
-# パッケージ追加
-uv add requests
-uv add --dev pytest
-
-# スクリプト実行
-uv run python script.py
-uv run pytest
+./install.sh
 ```
 
-## gh クイックリファレンス
+- `~/.claude/{CLAUDE.md,rules,skills,agents}` を symlink 化（既存物は `~/.claude/backups/pre-unify-*/` へ退避）
+- `~/.claude/settings.json` へ共通 permissions / hooks をマージ（`model` 等の既存キーは保持、`.bak` 作成）
 
-```bash
-# 認証
-gh auth login
+プロジェクト側の設定は不要。プロジェクト固有のドメイン知識や特殊なコマンドを
+教えたい場合のみ、そのプロジェクトに `CLAUDE.md` を作成する。
 
-# PR作成
-gh pr create --title "タイトル" --body "説明"
+> **注意**: 過去にプロジェクトや vault へコピーした旧 `.claude/`（rules/skills 一式）は、
+> ユーザーレベルと二重定義になるため削除すること。
 
-# PR一覧
-gh pr list
+## 主な使い方
 
-# PR確認
-gh pr view
-```
+| やりたいこと | トリガー例 |
+|-------------|-----------|
+| 設計から開発 | 「設計して」→ 承認 →「実装して」（dev-workflow） |
+| PR 作成 | 「PR を作成して」（create-pr） |
+| 論文の簡易査読 | 「この論文を査読して」（paper-review） |
+| トップ会議基準の査読 | 「top-tier 基準で査読して」 |
+| 模擬プログラム委員会 | 「査読パネルにかけて」→ 5 査読者が並列実行 + メタレビュー |
+| 議事録 | 「この vtt から議事録を作成して」（meeting-minutes） |
+| 週次 TODO 整理 | 「今週の日報からタスクをまとめて」（task-summary） |
+| 進捗報告 | 「来週のラボ MTG 用に 5 分の進捗報告を作成して」（progress-report） |
 
-## 個人CLAUDE.md vs プロジェクトCLAUDE.md
+## 設計メモ
 
-| 項目 | 個人 (`~/.claude/`) | プロジェクト (`./.claude/`) |
-|------|---------------------|----------------------------|
-| 適用範囲 | 全プロジェクト | 特定プロジェクトのみ |
-| 内容例 | 言語設定、個人的スタイル | 技術スタック、チーム規約 |
-| 共有 | 共有しない | Gitでチーム共有 |
-| 優先度 | 低 | 高（プロジェクトが上書き） |
-
-## 参考リンク
-
-- [Claude Code公式: Agent Skills](https://code.claude.com/docs/ja/skills)
-- [Claude Code公式: Memory](https://code.claude.com/docs/en/memory)
-- [スキル作成ベストプラクティス](https://platform.claude.com/docs/ja/agents-and-tools/agent-skills/best-practices)
-- [uv公式ドキュメント](https://docs.astral.sh/uv/)
-- [GitHub CLI公式](https://cli.github.com/)
+- **settings.json を symlink にしない理由**: Claude Code 本体が `/model` などの設定を
+  このファイルへ書き込むため。install.sh は既存キーを保持したままマージする
+- **obsidian.md と documentation.md の棲み分け**: どちらも Markdown を対象とするが、
+  obsidian.md はメモ（日報・サーベイ・議事録等）、documentation.md は開発プロジェクトの
+  `docs/` 配下の設計書に適用する。ルール冒頭に適用範囲を明記してあり、Claude が
+  ファイルの置き場所と書式から判断する
+- **旧構成からの変更点**: `project-obsidian/` と `project-python/` の 2 系統を廃止し、
+  重複していた settings（完全同一だった）と査読スキル 2 種（conference / top-tier）を統合。
+  `reviewer-e` の name が `reviewer-d` と重複していたバグを修正。
+  当初あった `templates/`（プロジェクト個別配置用）も、vault 内で実装も行う運用のため
+  廃止してグローバルに一本化した

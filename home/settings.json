@@ -1,0 +1,101 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(./**/*)",
+      "Edit(./**/*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(wc:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(diff:*)",
+      "Bash(touch:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(chmod:*)",
+      "Bash(lsof:*)",
+      "Bash(top:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git branch:*)",
+      "Bash(git stash:*)",
+      "Bash(git clone:*)",
+      "Bash(git init:*)",
+      "Bash(git restore --staged:*)",
+      "Bash(gh auth status)",
+      "Bash(gh repo view:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh issue view:*)",
+      "Bash(uv sync:*)",
+      "Bash(uv run:*)",
+      "Bash(uv add:*)",
+      "Bash(uv remove:*)",
+      "Bash(uv lock:*)",
+      "Bash(uv init:*)",
+      "Bash(lualatex:*)",
+      "Bash(/Library/TeX/texbin/lualatex:*)",
+      "Bash(export PATH=\"/Library/TeX/texbin:$PATH\")",
+      "Bash(PATH=\"/Library/TeX/texbin:/usr/bin:/bin:$PATH\")",
+      "WebSearch",
+      "WebFetch",
+      "Skill(japanese-academic-style-check)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/.envrc)",
+      "Read(**/*secret*)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Bash(sudo:*)",
+      "Bash(rm -rf /:*)",
+      "Bash(rm -rf ~:*)",
+      "Bash(dd:*)",
+      "Bash(shutdown:*)",
+      "Bash(reboot:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git reset:*)",
+      "Bash(git checkout:*)",
+      "Bash(rm:*)",
+      "Bash(mv:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"タスク完了\" with title \"Claude Code\" sound name \"Hero\"'",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"入力待ち\" with title \"Claude Code\" sound name \"Ping\"'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
