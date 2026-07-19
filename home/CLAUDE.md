@@ -26,10 +26,12 @@
 
 ## ルールとスキル
 
-- 常時適用ルール: `~/.claude/rules/git.md`
+- 常時適用ルール: `~/.claude/rules/git.md`, `~/.claude/rules/referent-before-label.md`
+  （設計・調査・命名では語より先に指示対象を対応表で固定する）
 - 条件付きルール（対象ファイル操作時のみ読み込み）: python / testing / security / documentation / obsidian
 - Obsidian vault 内では研究メモ管理と実装の両方を行う。メモ（日報・サーベイ・議事録等）は
   `rules/obsidian.md` の記法・命名規則に従い、コードや設計書には適用しない
-- スキルはコーディング用（dev-workflow, refactoring, create-pr）と
-  研究・メモ用（paper-review, meeting-minutes, progress-report, task-summary ほか）が
+- スキルはコーディング用（dev-workflow, refactoring, create-pr, apple-design）と
+  研究・メモ用（paper-review, meeting-minutes, progress-report, task-summary ほか）、
+  文書規律用（semantic-generation）が
   `~/.claude/skills/` に統合されている。内容に応じて適切なスキルを自動選択すること

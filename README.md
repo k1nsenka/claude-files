@@ -21,6 +21,7 @@ claude-files/
     ├── settings.json          # 共通 permissions / 通知 hooks（既存設定へ非破壊マージ）
     ├── rules/                 # ルール（paths 指定は条件付き読み込み）
     │   ├── git.md             # Git 規約（常時）
+    │   ├── referent-before-label.md  # 語より先に指示対象を固定（常時）
     │   ├── python.md          # uv + コーディングスタイル（*.py 操作時）
     │   ├── testing.md         # テスト規約（tests/** 操作時）
     │   ├── security.md        # 機密ファイル（.env* 等の操作時）
@@ -30,6 +31,8 @@ claude-files/
     │   ├── dev-workflow/      # 設計→承認→実装→テスト（旧 design+implementation 統合）
     │   ├── refactoring/       # リファクタリング
     │   ├── create-pr/         # PR 作成（gh）
+    │   ├── apple-design/      # Apple 流の流体 UI・モーション設計（WWDC 由来、日本語訳）
+    │   ├── semantic-generation/  # 対応表を先に提出し語より先に指示対象を固定する生成手順
     │   ├── paper-review/      # 論文査読（標準 / top-tier モード統合）
     │   ├── paper-review-panel/# ★ 5査読者並列 + メタレビューのオーケストレータ
     │   ├── meta-review/       # 査読統合プロトコル（meta-reviewer 用）
@@ -38,7 +41,9 @@ claude-files/
     │   ├── research-intro/    # 論文イントロ作成
     │   ├── meeting-minutes/   # vtt → 議事録
     │   ├── progress-report/   # 進捗報告作成
-    │   └── task-summary/      # TODO 集約
+    │   ├── task-summary/      # TODO 集約
+    │   ├── create-project/    # 研究プロジェクトの新規立ち上げ（vault テンプレート）
+    │   └── vault-observe/     # vault 全体の進捗観測・週報/月報/年報生成
     └── agents/                # 査読者エージェント
         ├── reviewer-a.md      # 方法論・妥当性・再現性
         ├── reviewer-b.md      # 分析の深さ（Analysis Lover）
@@ -68,6 +73,8 @@ claude-files/
 | やりたいこと | トリガー例 |
 |-------------|-----------|
 | 設計から開発 | 「設計して」→ 承認 →「実装して」（dev-workflow） |
+| Apple 風の流体 UI 実装 | 「ボトムシートを iOS っぽい挙動で実装して」（apple-design） |
+| 設計・調査文書の用語固定 | 設計書・調査報告・命名の着手時に対応表を先に作成（semantic-generation + referent-before-label） |
 | PR 作成 | 「PR を作成して」（create-pr） |
 | 論文の簡易査読 | 「この論文を査読して」（paper-review） |
 | トップ会議基準の査読 | 「top-tier 基準で査読して」 |
